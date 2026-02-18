@@ -1,97 +1,57 @@
-# Claude Code Windows Notifications
+# Claude Code Windows Notification
 
-Get native Windows balloon notifications when Claude Code finishes a task and needs your attention — even when you're in another app.
+Native Windows balloon notifications when Claude Code finishes a task or asks for permission — even when you're in another app.
 
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%2F11-blue)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-CLI-orange)
+![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC)
+
+## Install
+
+### From .vsix file
+
+1. Download the `.vsix` file from [Releases](https://github.com/SubidhKhanal/Claude-code-windows-notification/releases)
+2. In VS Code: Extensions sidebar → `...` menu → **Install from VSIX...**
+3. Restart VS Code — done!
+
+### From source
+
+```bash
+git clone https://github.com/SubidhKhanal/Claude-code-windows-notification.git
+cd Claude-code-windows-notification
+npx @vscode/vsce package
+```
+
+Then install the generated `.vsix` file via the method above.
 
 ## What it does
 
-When Claude Code completes a task that requires your input, a notification pops up near the system tray (bottom-right corner) so you never miss it — even if you're browsing Chrome, coding in VS Code, or doing anything else.
+You'll get a Windows balloon notification (near the system tray) when:
 
-## Quick Setup
+- **Task completed** — Claude finished and is waiting for your next message
+- **Permission needed** — Claude wants to run a tool and needs your approval
 
-### Option 1: Automatic (Recommended)
-
-```powershell
-git clone https://github.com/YOUR_USERNAME/claude-code-windows-notifications.git
-cd claude-code-windows-notifications
-powershell -ExecutionPolicy Bypass -File setup.ps1
-```
-
-The setup script will:
-1. Create `~/.claude/hooks/` directory if it doesn't exist
-2. Copy the notification script there
-3. Add the hook to your `~/.claude/settings.json`
-4. Send a test notification to verify it works
-
-### Option 2: Manual
-
-**Step 1:** Copy `notify.ps1` to `~/.claude/hooks/`:
-
-```powershell
-mkdir "$env:USERPROFILE\.claude\hooks" -Force
-copy notify.ps1 "$env:USERPROFILE\.claude\hooks\notify.ps1"
-```
-
-**Step 2:** Add the hook to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe -ExecutionPolicy Bypass -File C:\\Users\\YOUR_USERNAME\\.claude\\hooks\\notify.ps1"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Replace `YOUR_USERNAME` with your Windows username.
-
-**Step 3:** Test it:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.claude\hooks\notify.ps1"
-```
-
-You should see a balloon notification near the clock.
-
-## Troubleshooting
-
-### No notification appears
-
-1. **Check Windows notifications are enabled:**
-   Settings > System > Notifications > make sure it's ON
-
-2. **Check "Get notifications from apps" is enabled** in the same settings page
-
-3. **Test the script directly:**
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File notify.ps1
-   ```
-
-### Notification appears but disappears too fast
-
-Edit `notify.ps1` and increase the `5000` value (milliseconds) in `ShowBalloonTip(5000)` and the `5500` in `Start-Sleep`.
+No manual setup required. The extension automatically configures Claude Code hooks on startup.
 
 ## How it works
 
-- Uses .NET `System.Windows.Forms.NotifyIcon` to create a system tray balloon notification
-- Claude Code triggers it via the [hooks system](https://docs.anthropic.com/en/docs/claude-code/hooks) whenever it needs your attention
-- No external dependencies — uses built-in Windows/.NET APIs
+On activation, the extension:
+
+1. Copies the notification script to `~/.claude/hooks/`
+2. Registers two [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) in `~/.claude/settings.json`:
+   - **`Stop`** — fires immediately when Claude finishes responding
+   - **`Notification`** — fires when Claude needs permission or the user has been idle
+3. When a hook fires, it runs a PowerShell script that shows a native Windows balloon notification
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `Claude Notifications: Setup Hooks` | Re-run the hook setup (useful after updates) |
 
 ## Requirements
 
 - Windows 10 or 11
-- PowerShell 5.1+ (comes with Windows)
+- VS Code 1.74+
 - Claude Code CLI
 
 ## License

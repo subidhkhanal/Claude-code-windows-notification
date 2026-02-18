@@ -1,0 +1,5 @@
+.git
+.gitignore
+setup.ps1
+*.md
+!README.md

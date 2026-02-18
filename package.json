@@ -1,0 +1,36 @@
+{
+  "name": "claude-helper",
+  "displayName": "Claude Helper",
+  "description": "Native Windows balloon notifications when Claude Code finishes a task or asks for permission.",
+  "version": "1.0.0",
+  "publisher": "SubidhKhanal",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "notifications",
+    "windows"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claude-notifications.setup",
+        "title": "Claude Notifications: Setup Hooks"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SubidhKhanal/Claude-code-windows-notification"
+  }
+}
